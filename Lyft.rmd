@@ -1,0 +1,57 @@
+---
+title: "Lyft Bike Flex_dashboard"
+author: "Maitry Shah"
+output: 
+  flexdashboard::flex_dashboard
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+Column {data-width=600}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+library(leaflet)
+
+mappp <- leaflet(ford) %>%
+  addTiles() %>%  # Add default OpenStreetMap map tiles
+  addMarkers(lng = ~ford$longitude , lat = ~ford$latitute)  
+mappp  # Print the map
+
+```
+Column {data-width=400}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+library(tidyverse)
+library(plotly)
+library(mdsr)
+library(babynames)
+
+user <- ford %>% select(start_station_name,start_time,user_type,member_birth_year,duration_sec) %>%
+  filter(start_station_name %in% c("San Francisco Ferry Building (Harry Bridges Plaza)", "Montgomery St BART Station (Market St at 2nd St)", "Howard St at 8th St") & user_type == "Subscriber") %>% na.omit()
+
+user_plot <- user %>% ggplot(aes(x = member_birth_year, y = duration_sec)) +
+  geom_line(aes(color = start_station_name), size = 1)
+
+ggplotly(user_plot)
+```
+
+### Chart C
+
+```{r}
+library(dygraphs)
+
+ford %>% select(start_time,bike_id,duration_sec,user_type) %>%
+  spread(key = start_time, value = user_type) %>%
+  dygraph(periodicity = start_time) %>%
+  dyRangeSelector()
+```
+
+
