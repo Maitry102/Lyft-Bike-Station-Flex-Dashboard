@@ -1,0 +1,24 @@
+```{r}
+library(tidyverse)
+
+library(gtrendsR)
+
+data("categories")
+
+head(categories)
+
+res <- gtrends(c("Cartoons","Jazz","Opera"), geo = c("US"), time = "all")
+
+plot(res)
+
+res <- res$interest_over_time
+
+head(res)
+
+res %>% select(keyword, date, hits) %>%
+
+rename(type = keyword, close = hits) %>%
+
+write_csv("data/trend_data.csv")
+```
+
